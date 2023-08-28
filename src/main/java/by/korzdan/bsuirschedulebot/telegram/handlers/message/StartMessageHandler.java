@@ -1,41 +1,31 @@
-package by.korzdan.bsuirschedulebot.telegram.handlers;
+package by.korzdan.bsuirschedulebot.telegram.handlers.message;
 
-import by.korzdan.bsuirschedulebot.domain.UserState;
-import by.korzdan.bsuirschedulebot.repository.UserRepository;
+import by.korzdan.bsuirschedulebot.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class StartMessageHandler implements MessageHandler {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
     public BotApiMethod<Message> handleMessage(Update update) {
         Message message = update.getMessage();
-        createNewUser(message);
+        userService.createNewUserFromTelegramMessage(message);
         return new SendMessage(message.getChatId().toString(), "Привет, это телеграм-бот, который точно облегчит" +
                 " тебе жизнь с расписанием. Давай для начала зарегистрируемся. Введи свой номер группы:");
-    }
-
-    private void createNewUser(Message message) {
-        by.korzdan.bsuirschedulebot.domain.User user = new by.korzdan.bsuirschedulebot.domain.User()
-                .setId(message.getFrom().getId())
-                .setChatId(message.getChatId().toString())
-                .setUsername(message.getFrom().getUserName())
-                .setUserState(UserState.GROUP_NUMBER_INPUT);
-        userRepository.save(user);
     }
 
     @Override
     public Boolean isAppropriateMessageHandler(Update update) {
         Long userId = update.getMessage().getFrom().getId();
         String messageCommand = update.getMessage().getText();
-        return messageCommand.equals("/start") && !userRepository.existsById(userId);
+        return messageCommand.equals("/start") && !userService.existById(userId);
     }
 }

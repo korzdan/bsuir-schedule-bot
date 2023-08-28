@@ -13,7 +13,7 @@ public class User {
     private Long id;
     private String chatId;
     private String username;
-    private Integer groupNumber;
+    private String groupNumber;
     private UserState userState;
     private Boolean isRegistrationComplete;
 }

@@ -1,6 +1,7 @@
 package by.korzdan.bsuirschedulebot.telegram;
 
-import by.korzdan.bsuirschedulebot.telegram.handlers.MessageHandlerFactory;
+import by.korzdan.bsuirschedulebot.telegram.handlers.message.MessageHandlerFactory;
+import by.korzdan.bsuirschedulebot.telegram.handlers.query.QueryHandlerFactory;
 import lombok.Getter;
 import lombok.Setter;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -17,14 +18,24 @@ public class BsuirHelperScheduleBot extends SpringWebhookBot {
     private String botToken;
 
     private MessageHandlerFactory messageHandlerFactory;
+    private QueryHandlerFactory queryHandlerFactory;
 
-    public BsuirHelperScheduleBot(SetWebhook setWebhook, MessageHandlerFactory messageHandlerFactory) {
+    public BsuirHelperScheduleBot(
+            SetWebhook setWebhook,
+            MessageHandlerFactory messageHandlerFactory,
+            QueryHandlerFactory queryHandlerFactory) {
         super(setWebhook);
         this.messageHandlerFactory = messageHandlerFactory;
+        this.queryHandlerFactory = queryHandlerFactory;
     }
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        return messageHandlerFactory.handleMessage(update);
+        if (update.hasMessage()) {
+            return messageHandlerFactory.handleMessage(update);
+        } else if (update.hasCallbackQuery()) {
+            return queryHandlerFactory.handleQuery(update);
+        }
+        return null;
     }
 }

@@ -1,14 +1,14 @@
-package by.korzdan.bsuirschedulebot.telegram.handlers;
+package by.korzdan.bsuirschedulebot.telegram.handlers.message;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class MessageHandlerFactory {
 
